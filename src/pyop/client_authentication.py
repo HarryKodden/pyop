@@ -57,7 +57,8 @@ def verify_client_authentication(clients, parsed_request, authz_header=None):
         raise InvalidClientAuthentication('Incorrect client_secret')
 
     expected_authn_method = client_info.get('token_endpoint_auth_method', 'client_secret_basic')
-    if authn_method != expected_authn_method:
+    # The token_authn_method might have spedified both methos, e.g. ['cient_secret_post', 'client_secret_basic']
+    if (isinstance(expected_authn_method, list) and authn_method not in expected_authn_method) or (authn_method != expected_authn_method):
         raise InvalidClientAuthentication(
             'Wrong authentication method used, MUST use \'{}\''.format(expected_authn_method))
 
